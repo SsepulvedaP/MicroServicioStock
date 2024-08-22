@@ -1,14 +1,12 @@
 package com.MicroService.MicroServiceStock.domain.usecase;
 
 import com.MicroService.MicroServiceStock.domain.api.ICategoryServicePort;
-import com.MicroService.MicroServiceStock.domain.exceptions.DuplicateCategoryNameException;
 import com.MicroService.MicroServiceStock.domain.exceptions.InvalidCategoryDataException;
 import com.MicroService.MicroServiceStock.domain.models.Category;
 import com.MicroService.MicroServiceStock.domain.spi.ICategoryPersistencePort;
 
 
 import java.util.List;
-import java.util.Optional;
 
 
 public class CategoryUseCase implements ICategoryServicePort {
@@ -21,7 +19,6 @@ public class CategoryUseCase implements ICategoryServicePort {
 
     @Override
     public void createCategory(Category category) {
-
         // Validación: El nombre no debe exceder 50 caracteres
         if (category.getName().length() > 50 ) {
             throw new InvalidCategoryDataException("El nombre de la categoría no puede exceder los 50 caracteres.");
