@@ -3,6 +3,8 @@ package com.MicroService.MicroServiceStock.infrastructure.jpa.adapter;
 
 import com.MicroService.MicroServiceStock.domain.exceptions.DuplicateCategoryNameException;
 import com.MicroService.MicroServiceStock.domain.models.Category;
+import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
+import com.MicroService.MicroServiceStock.domain.pagination.PageRequestCustom;
 import com.MicroService.MicroServiceStock.domain.spi.ICategoryPersistencePort;
 import com.MicroService.MicroServiceStock.infrastructure.exception.CategoryNotFoundException;
 import com.MicroService.MicroServiceStock.infrastructure.exception.NoDataFoundException;
@@ -10,6 +12,9 @@ import com.MicroService.MicroServiceStock.infrastructure.jpa.entity.CategoryEnti
 import com.MicroService.MicroServiceStock.infrastructure.jpa.mapper.CategoryEntityMapper;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.ICategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +41,8 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
         if(categoryEntityList.isEmpty()){
             throw new NoDataFoundException();
         }
-        return categoryEntityMapper.toCategoryList(categoryEntityList);
+
+        return categoryEntityMapper.toListCategory(categoryEntityList);
     }
 
     @Override
@@ -53,9 +59,30 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
     }
 
     @Override
-    public void deleteCategory(Category category) {
-        categoryRepository.deleteByName(category.getName());
+    public void deleteCategory(String name) {
+        categoryRepository.deleteByName(name);
 
+    }
+
+    @Override
+    public PageCustom<Category> getCategories(PageRequestCustom pageRequest) {
+        PageRequest pageRequestSpring = PageRequest.of(
+                pageRequest.getPage(),
+                pageRequest.getSize(),
+                pageRequest.isAscending() ? Sort.by(pageRequest.getSortField()).ascending() : Sort.by(pageRequest.getSortField()).descending()
+        );
+
+        Page<CategoryEntity> categoryEntityPage = categoryRepository.findAll(pageRequestSpring);
+
+        List<Category> categories = categoryEntityMapper.toListCategory(categoryEntityPage.getContent());
+
+        return new PageCustom<>(
+                categories,
+                (int) categoryEntityPage.getTotalElements(),
+                categoryEntityPage.getTotalPages(),
+                categoryEntityPage.getNumber(),
+                pageRequest.isAscending()
+        );
     }
 
 
