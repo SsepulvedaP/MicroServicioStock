@@ -77,9 +77,7 @@ public class CategoryRestController {
     })
     @DeleteMapping("/{name}")
     public ResponseEntity<Void> deleteCategory(@PathVariable String name) {
-        CategoryRequest categoryRequest = new CategoryRequest();
-        categoryRequest.setName(name);
-        categoryHandler.deleteCategory(categoryRequest);
+        categoryHandler.deleteCategory(name);
         return ResponseEntity.noContent().build();
     }
 

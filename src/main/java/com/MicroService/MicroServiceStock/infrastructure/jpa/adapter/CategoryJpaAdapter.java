@@ -41,7 +41,8 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
         if(categoryEntityList.isEmpty()){
             throw new NoDataFoundException();
         }
-        return categoryEntityMapper.toCategoryList(categoryEntityList);
+
+        return categoryEntityMapper.toListCategory(categoryEntityList);
     }
 
     @Override
@@ -58,8 +59,8 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
     }
 
     @Override
-    public void deleteCategory(Category category) {
-        categoryRepository.deleteByName(category.getName());
+    public void deleteCategory(String name) {
+        categoryRepository.deleteByName(name);
 
     }
 
@@ -73,7 +74,7 @@ public class CategoryJpaAdapter implements ICategoryPersistencePort {
 
         Page<CategoryEntity> categoryEntityPage = categoryRepository.findAll(pageRequestSpring);
 
-        List<Category> categories = categoryEntityMapper.toCategoryList(categoryEntityPage.getContent());
+        List<Category> categories = categoryEntityMapper.toListCategory(categoryEntityPage.getContent());
 
         return new PageCustom<>(
                 categories,

@@ -51,9 +51,9 @@ public class CategoryHandler implements ICategoryHandler{
     }
 
     @Override
-    public void deleteCategory(CategoryRequest categoryRequest) {
-        Category category = categoryRequestMapper.toCategory(categoryRequest);
-        categoryServicePort.deleteCategory(category);
+    public void deleteCategory(String name) {
+        Category category = categoryServicePort.getCategoryByName(name);
+        categoryServicePort.deleteCategory(name);
     }
 
     @Override

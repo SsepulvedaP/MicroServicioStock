@@ -14,6 +14,6 @@ public interface ICategoryHandler {
     List<CategoryResponse> GetAllCategories();
     CategoryResponse getCategoryByName(String name);
     void updateCategory(CategoryRequest categoryRequest);
-    void deleteCategory(CategoryRequest categoryRequest);
+    void deleteCategory(String name);
     PageCustom<CategoryResponse> getCategories(PageRequestCustom pageRequest);
 }
