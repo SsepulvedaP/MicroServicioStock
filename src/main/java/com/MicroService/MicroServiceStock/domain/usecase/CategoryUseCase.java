@@ -3,6 +3,8 @@ package com.MicroService.MicroServiceStock.domain.usecase;
 import com.MicroService.MicroServiceStock.domain.api.ICategoryServicePort;
 import com.MicroService.MicroServiceStock.domain.exceptions.InvalidCategoryDataException;
 import com.MicroService.MicroServiceStock.domain.models.Category;
+import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
+import com.MicroService.MicroServiceStock.domain.pagination.PageRequestCustom;
 import com.MicroService.MicroServiceStock.domain.spi.ICategoryPersistencePort;
 
 
@@ -52,5 +54,18 @@ public class CategoryUseCase implements ICategoryServicePort {
     @Override
     public void deleteCategory(Category category) {
 
+    }
+
+    @Override
+    public PageCustom<Category> getCategories(PageRequestCustom pageRequest) {
+        // Llamar al puerto de persistencia para obtener las categorías paginadas
+        PageCustom<Category> categoriesPage = categoryPersistencePort.getCategories(pageRequest);
+
+        // Validar que la respuesta no sea nula
+        if (categoriesPage == null || categoriesPage.getContent().isEmpty()) {
+            throw new InvalidCategoryDataException("No se encontraron categorías.");
+        }
+
+        return categoriesPage;
     }
 }
