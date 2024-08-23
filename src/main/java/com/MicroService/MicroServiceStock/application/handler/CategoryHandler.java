@@ -7,6 +7,8 @@ import com.MicroService.MicroServiceStock.application.mapper.CategoryRequestMapp
 import com.MicroService.MicroServiceStock.application.mapper.CategoryResponseMapper;
 import com.MicroService.MicroServiceStock.domain.api.ICategoryServicePort;
 import com.MicroService.MicroServiceStock.domain.models.Category;
+import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
+import com.MicroService.MicroServiceStock.domain.pagination.PageRequestCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,4 +55,19 @@ public class CategoryHandler implements ICategoryHandler{
         Category category = categoryRequestMapper.toCategory(categoryRequest);
         categoryServicePort.deleteCategory(category);
     }
+
+    @Override
+    public PageCustom<CategoryResponse> getCategories(PageRequestCustom pageRequest) {
+        PageCustom<Category> categoriesPage = categoryServicePort.getCategories(pageRequest);
+        List<CategoryResponse> responseList = categoryResponseMapper.toResponseList(categoriesPage.getContent());
+        return new PageCustom<>(
+                responseList,
+                categoriesPage.getTotalElements(),
+                categoriesPage.getTotalPages(),
+                categoriesPage.getCurrentPage(),
+                categoriesPage.isAscending()
+        );
+    }
+
+
 }
