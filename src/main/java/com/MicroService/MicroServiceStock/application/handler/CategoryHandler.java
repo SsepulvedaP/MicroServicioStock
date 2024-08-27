@@ -1,10 +1,11 @@
 package com.MicroService.MicroServiceStock.application.handler;
 
-import com.MicroService.MicroServiceStock.application.dto.CategoryRequest;
-import com.MicroService.MicroServiceStock.application.dto.CategoryResponse;
+import com.MicroService.MicroServiceStock.application.dto.request.CategoryRequest;
+import com.MicroService.MicroServiceStock.application.dto.response.CategoryResponse;
 
-import com.MicroService.MicroServiceStock.application.mapper.CategoryRequestMapper;
-import com.MicroService.MicroServiceStock.application.mapper.CategoryResponseMapper;
+import com.MicroService.MicroServiceStock.application.handler.interfaces.ICategoryHandler;
+import com.MicroService.MicroServiceStock.application.mapper.request.CategoryRequestMapper;
+import com.MicroService.MicroServiceStock.application.mapper.response.CategoryResponseMapper;
 import com.MicroService.MicroServiceStock.domain.api.ICategoryServicePort;
 import com.MicroService.MicroServiceStock.domain.models.Category;
 import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
@@ -19,7 +20,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CategoryHandler implements ICategoryHandler{
+public class CategoryHandler implements ICategoryHandler {
 
     private final ICategoryServicePort categoryServicePort;
     private final CategoryRequestMapper categoryRequestMapper;

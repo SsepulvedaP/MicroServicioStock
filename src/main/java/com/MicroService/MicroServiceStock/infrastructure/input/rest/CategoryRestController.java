@@ -1,9 +1,9 @@
 package com.MicroService.MicroServiceStock.infrastructure.input.rest;
 
 
-import com.MicroService.MicroServiceStock.application.dto.CategoryRequest;
-import com.MicroService.MicroServiceStock.application.dto.CategoryResponse;
-import com.MicroService.MicroServiceStock.application.handler.ICategoryHandler;
+import com.MicroService.MicroServiceStock.application.dto.request.CategoryRequest;
+import com.MicroService.MicroServiceStock.application.dto.response.CategoryResponse;
+import com.MicroService.MicroServiceStock.application.handler.interfaces.ICategoryHandler;
 import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
 import com.MicroService.MicroServiceStock.domain.pagination.PageRequestCustom;
 import io.swagger.v3.oas.annotations.Operation;
