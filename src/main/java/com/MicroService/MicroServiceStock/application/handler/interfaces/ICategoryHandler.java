@@ -1,8 +1,7 @@
-package com.MicroService.MicroServiceStock.application.handler;
+package com.MicroService.MicroServiceStock.application.handler.interfaces;
 
-import com.MicroService.MicroServiceStock.application.dto.CategoryRequest;
-import com.MicroService.MicroServiceStock.application.dto.CategoryResponse;
-import com.MicroService.MicroServiceStock.domain.models.Category;
+import com.MicroService.MicroServiceStock.application.dto.request.CategoryRequest;
+import com.MicroService.MicroServiceStock.application.dto.response.CategoryResponse;
 import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
 import com.MicroService.MicroServiceStock.domain.pagination.PageRequestCustom;
 
