@@ -36,7 +36,7 @@ public class CategoryHandler implements ICategoryHandler {
 
     @Override
     public List<CategoryResponse> GetAllCategories() {
-        return categoryResponseMapper.toResponseList(categoryServicePort.GetAllCategories());
+        return categoryResponseMapper.toResponseList(categoryServicePort.getAllCategories());
     }
 
     @Override

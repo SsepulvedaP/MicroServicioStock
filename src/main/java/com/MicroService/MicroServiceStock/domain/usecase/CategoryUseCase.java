@@ -36,7 +36,7 @@ public class CategoryUseCase implements ICategoryServicePort {
     }
 
     @Override
-    public List<Category> GetAllCategories() {
+    public List<Category> getAllCategories() {
         return categoryPersistencePort.GetAllCategories();
     }
 
