@@ -74,7 +74,7 @@ class CategoryUseCaseTest {
         );
         when(categoryPersistencePort.GetAllCategories()).thenReturn(mockCategories);
 
-        List<Category> categories = categoryUseCase.GetAllCategories();
+        List<Category> categories = categoryUseCase.getAllCategories();
 
         assertEquals(2, categories.size());
         verify(categoryPersistencePort).GetAllCategories();
@@ -84,7 +84,7 @@ class CategoryUseCaseTest {
     void getAllCategories_ShouldReturnEmptyList_WhenNoCategoriesExist() {
         when(categoryPersistencePort.GetAllCategories()).thenReturn(Arrays.asList());
 
-        List<Category> categories = categoryUseCase.GetAllCategories();
+        List<Category> categories = categoryUseCase.getAllCategories();
 
         assertTrue(categories.isEmpty());
         verify(categoryPersistencePort).GetAllCategories();
