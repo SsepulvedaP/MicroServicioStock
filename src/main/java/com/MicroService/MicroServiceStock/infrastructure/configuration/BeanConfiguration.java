@@ -1,15 +1,21 @@
 package com.MicroService.MicroServiceStock.infrastructure.configuration;
 
+import com.MicroService.MicroServiceStock.domain.api.IArticleServicePort;
 import com.MicroService.MicroServiceStock.domain.api.IBrandServicePort;
 import com.MicroService.MicroServiceStock.domain.api.ICategoryServicePort;
+import com.MicroService.MicroServiceStock.domain.spi.IArticlePersistencePort;
 import com.MicroService.MicroServiceStock.domain.spi.IBrandPersistencePort;
 import com.MicroService.MicroServiceStock.domain.spi.ICategoryPersistencePort;
+import com.MicroService.MicroServiceStock.domain.usecase.ArticleUseCase;
 import com.MicroService.MicroServiceStock.domain.usecase.BrandUseCase;
 import com.MicroService.MicroServiceStock.domain.usecase.CategoryUseCase;
+import com.MicroService.MicroServiceStock.infrastructure.jpa.adapter.ArticleJpaAdapter;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.adapter.BrandJpaAdapter;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.adapter.CategoryJpaAdapter;
+import com.MicroService.MicroServiceStock.infrastructure.jpa.mapper.ArticleEntityMapper;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.mapper.BrandEntityMapper;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.mapper.CategoryEntityMapper;
+import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.IArticleRepository;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.IBrandRepository;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.ICategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +30,8 @@ public class BeanConfiguration {
     private final CategoryEntityMapper categoryEntityMapper;
     private final IBrandRepository brandRepository;
     private final BrandEntityMapper brandEntityMapper;
+    private final IArticleRepository iArticleRepository;
+    private final ArticleEntityMapper articleEntityMapper;
 
 
     @Bean
@@ -44,5 +52,15 @@ public class BeanConfiguration {
     @Bean
     public IBrandServicePort brandServicePort(){
         return new BrandUseCase(brandPersistencePort());
+    }
+
+    @Bean
+    public IArticlePersistencePort articlePersistencePort() {
+        return new ArticleJpaAdapter(iArticleRepository, articleEntityMapper, brandRepository, categoryRepository);
+    }
+
+    @Bean
+    public IArticleServicePort articleServicePort() {
+        return new ArticleUseCase(articlePersistencePort());
     }
 }
