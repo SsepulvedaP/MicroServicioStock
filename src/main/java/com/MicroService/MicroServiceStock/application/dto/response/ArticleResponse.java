@@ -15,5 +15,5 @@ public class ArticleResponse {
     private int cantity;
     private double price;
     private Brand brand;
-    private List<Category> categories;
+    private List<CategoryArticleResponse> categories;
 }

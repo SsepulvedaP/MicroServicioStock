@@ -15,6 +15,9 @@ public class Category {
 
     }
 
+    public Category(Long id, String name) {
+    }
+
     public String getName() {
         return name;
     }
