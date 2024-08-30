@@ -18,6 +18,7 @@ public interface ArticleResponseMapper {
     @Mapping(source = "cantity", target = "cantity")
     @Mapping(source = "price", target = "price")
     ArticleResponse toResponse(Article article);
+
     default List<ArticleResponse> toResponseList(List<Article> articleList) {
         return articleList.stream()
                 .map(this::toResponse)

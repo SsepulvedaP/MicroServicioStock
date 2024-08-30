@@ -4,6 +4,8 @@ package com.MicroService.MicroServiceStock.infrastructure.input.rest;
 import com.MicroService.MicroServiceStock.application.dto.request.ArticleRequest;
 import com.MicroService.MicroServiceStock.application.dto.response.ArticleResponse;
 import com.MicroService.MicroServiceStock.application.handler.interfaces.IArticleHandler;
+import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
+import com.MicroService.MicroServiceStock.domain.pagination.PageRequestCustom;
 import com.MicroService.MicroServiceStock.infrastructure.exception.ArticleNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -59,7 +61,28 @@ public class ArticleRestController {
     public ResponseEntity<ArticleResponse> getArticleById(@PathVariable Long id) {
         return articleHandler.getArticleById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ArticleNotFoundException());
+                .orElseThrow(() -> new ArticleNotFoundException("Articulo no encontrado"));
+    }
+
+    @Operation(summary = "Get paginated list of articles with sorting and filtering")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Articles retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "No articles found",
+                    content = @Content(schema = @Schema(implementation = Error.class)))
+    })
+    @GetMapping("/paged")
+    public ResponseEntity<PageCustom<ArticleResponse>> getArticlesPaged(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "name") String sortField,
+            @RequestParam(required = false, defaultValue = "true") boolean ascending,
+            @RequestParam(required = false) String brandName,
+            @RequestParam(required = false) String categoryName) {
+
+        PageRequestCustom pageRequest = new PageRequestCustom(page, size, ascending, sortField);
+        PageCustom<ArticleResponse> articles = articleHandler.getArticles(pageRequest, brandName, categoryName);
+
+        return new ResponseEntity<>(articles, HttpStatus.OK);
     }
 
 
