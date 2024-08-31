@@ -1,7 +1,8 @@
 package com.MicroService.MicroServiceStock.application.mapper.request;
 
-import com.MicroService.MicroServiceStock.application.dto.request.ArticleRequest;
-import com.MicroService.MicroServiceStock.domain.models.Article;
+import com.MicroService.MicroServiceStock.application.dto.request.ProductRequest;
+import com.MicroService.MicroServiceStock.domain.models.Product;
+import java.util.Collections;
 import com.MicroService.MicroServiceStock.domain.models.Brand;
 import com.MicroService.MicroServiceStock.domain.models.Category;
 import org.mapstruct.Mapper;
@@ -13,11 +14,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
-public interface ArticleRequestMapper {
+public interface ProductRequestMapper {
 
     @Mapping(source = "brandId", target = "brand", qualifiedByName = "toBrand")
     @Mapping(source = "categoryIds", target = "categories", qualifiedByName = "toCategories")
-    Article toArticle(ArticleRequest request);
+    Product toProduct(ProductRequest request);
 
     @Named("toBrand")
     default Brand toBrand(Long brandId) {
@@ -32,7 +33,7 @@ public interface ArticleRequestMapper {
     @Named("toCategories")
     default List<Category> toCategories(Set<Long> categoryIds) {
         if (categoryIds == null) {
-            return null;
+            return Collections.emptyList();
         }
         return categoryIds.stream()
                 .map(id -> {
@@ -40,6 +41,6 @@ public interface ArticleRequestMapper {
                     category.setId(id);
                     return category;
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 }

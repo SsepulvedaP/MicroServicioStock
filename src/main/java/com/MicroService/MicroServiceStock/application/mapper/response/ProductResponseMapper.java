@@ -1,8 +1,8 @@
 package com.MicroService.MicroServiceStock.application.mapper.response;
 
 
-import com.MicroService.MicroServiceStock.application.dto.response.ArticleResponse;
-import com.MicroService.MicroServiceStock.domain.models.Article;
+import com.MicroService.MicroServiceStock.application.dto.response.ProductResponse;
+import com.MicroService.MicroServiceStock.domain.models.Product;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,15 +12,15 @@ import java.util.List;
 
 
 @Mapper(componentModel = "spring")
-public interface ArticleResponseMapper {
+public interface ProductResponseMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "description", target = "description")
-    @Mapping(source = "cantity", target = "cantity")
+    @Mapping(source = "quantity", target = "quantity")
     @Mapping(source = "price", target = "price")
-    ArticleResponse toResponse(Article article);
+    ProductResponse toResponse(Product product);
 
-    default List<ArticleResponse> toResponseList(List<Article> articleList) {
-        return articleList.stream()
+    default List<ProductResponse> toResponseList(List<Product> productList) {
+        return productList.stream()
                 .map(this::toResponse)
                 .toList();
     }
