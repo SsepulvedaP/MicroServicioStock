@@ -8,13 +8,13 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class ArticleRequest {
+public class ProductRequest {
     @NotBlank
     private String name;
     @NotBlank
     private String description;
     @Min(1)
-    private int cantity;
+    private int quantity;
     @NotBlank
     @Positive(message = "El precio debe ser mayor a 0")
     private double price;

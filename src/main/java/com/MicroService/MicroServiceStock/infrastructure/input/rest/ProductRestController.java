@@ -1,12 +1,12 @@
 package com.MicroService.MicroServiceStock.infrastructure.input.rest;
 
 
-import com.MicroService.MicroServiceStock.application.dto.request.ArticleRequest;
-import com.MicroService.MicroServiceStock.application.dto.response.ArticleResponse;
-import com.MicroService.MicroServiceStock.application.handler.interfaces.IArticleHandler;
+import com.MicroService.MicroServiceStock.application.dto.request.ProductRequest;
+import com.MicroService.MicroServiceStock.application.dto.response.ProductResponse;
+import com.MicroService.MicroServiceStock.application.handler.interfaces.IProductHandler;
 import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
 import com.MicroService.MicroServiceStock.domain.pagination.PageRequestCustom;
-import com.MicroService.MicroServiceStock.infrastructure.exception.ArticleNotFoundException;
+import com.MicroService.MicroServiceStock.infrastructure.exception.ProductNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,58 +20,59 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/articles")
+@RequestMapping("/products")
 @RequiredArgsConstructor
-public class ArticleRestController {
+public class ProductRestController {
 
-    private final IArticleHandler articleHandler;
+    private final IProductHandler articleHandler;
 
-    @Operation(summary = "Create a new article")
+    @Operation(summary = "Create a new product")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Article created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data",
+            @ApiResponse(responseCode = "201", description = "Producto creado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada incorrectos",
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PostMapping("/")
-    public ResponseEntity<Void> createArticle(@RequestBody ArticleRequest articleRequest) {
-        articleHandler.createArticle(articleRequest);
+    public ResponseEntity<Void> createArticle(@RequestBody ProductRequest productRequest) {
+        articleHandler.createProduct(productRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Operation(summary = "Get all articles")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved list of articles",
-                    content = @Content(schema = @Schema(implementation = ArticleResponse.class))),
-            @ApiResponse(responseCode = "404", description = "No articles found",
+            @ApiResponse(responseCode = "200", description = "Lista de productos encontrados.",
+                    content = @Content(schema = @Schema(implementation = ProductResponse.class))),
+            @ApiResponse(responseCode = "404", description = "No hay productos encontrados.",
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/")
-    public ResponseEntity<List<ArticleResponse>> getAllArticles() {
-        return ResponseEntity.ok(articleHandler.getAllArticles());
+    public ResponseEntity<List<ProductResponse>> getAllArticles() {
+        return ResponseEntity.ok(articleHandler.getAllProducts());
     }
 
     @Operation(summary = "Get an article by ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Article found successfully",
-                    content = @Content(schema = @Schema(implementation = ArticleResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Article not found",
+            @ApiResponse(responseCode = "200", description = "Producto encontrado exitosamente",
+                    content = @Content(schema = @Schema(implementation = ProductResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Product no encontrado",
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ArticleResponse> getArticleById(@PathVariable Long id) {
-        return articleHandler.getArticleById(id)
+    public ResponseEntity<ProductResponse> getArticleById(@PathVariable Long id) {
+        return articleHandler.getProductById(id)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ArticleNotFoundException("Articulo no encontrado"));
+                .orElseThrow(() -> new ProductNotFoundException("Producto no encontrado"));
     }
 
     @Operation(summary = "Get paginated list of articles with sorting and filtering")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Articles retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "No articles found",
+            @ApiResponse(responseCode = "200", description = "Productos encontrados",
+                    content = @Content(schema = @Schema(implementation = ProductResponse.class))),
+            @ApiResponse(responseCode = "404", description = "No hay productos encontrados",
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/paged")
-    public ResponseEntity<PageCustom<ArticleResponse>> getArticlesPaged(
+    public ResponseEntity<PageCustom<ProductResponse>> getArticlesPaged(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "name") String sortField,
@@ -80,7 +81,7 @@ public class ArticleRestController {
             @RequestParam(required = false) String categoryName) {
 
         PageRequestCustom pageRequest = new PageRequestCustom(page, size, ascending, sortField);
-        PageCustom<ArticleResponse> articles = articleHandler.getArticles(pageRequest, brandName, categoryName);
+        PageCustom<ProductResponse> articles = articleHandler.getProducts(pageRequest, brandName, categoryName);
 
         return new ResponseEntity<>(articles, HttpStatus.OK);
     }

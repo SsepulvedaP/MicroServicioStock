@@ -1,14 +1,14 @@
 package com.MicroService.MicroServiceStock.infrastructure.jpa.adapter;
 
 import com.MicroService.MicroServiceStock.domain.exceptions.DuplicateArticleNameException;
-import com.MicroService.MicroServiceStock.domain.models.Article;
+import com.MicroService.MicroServiceStock.domain.models.Product;
 import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
 import com.MicroService.MicroServiceStock.domain.pagination.PageRequestCustom;
-import com.MicroService.MicroServiceStock.domain.spi.IArticlePersistencePort;
+import com.MicroService.MicroServiceStock.domain.spi.IProductPersistencePort;
 import com.MicroService.MicroServiceStock.infrastructure.exception.NoDataFoundException;
-import com.MicroService.MicroServiceStock.infrastructure.jpa.entity.ArticleEntity;
-import com.MicroService.MicroServiceStock.infrastructure.jpa.mapper.ArticleEntityMapper;
-import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.IArticleRepository;
+import com.MicroService.MicroServiceStock.infrastructure.jpa.entity.ProductEntity;
+import com.MicroService.MicroServiceStock.infrastructure.jpa.mapper.ProductEntityMapper;
+import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.IProductRepository;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.IBrandRepository;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.ICategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,44 +22,44 @@ import java.util.Optional;
 
 
 @RequiredArgsConstructor
-public class ArticleJpaAdapter implements IArticlePersistencePort {
+public class ProductJpaAdapter implements IProductPersistencePort {
 
-    private final IArticleRepository articleRepository;
-    private final ArticleEntityMapper articleEntityMapper;
+    private final IProductRepository articleRepository;
+    private final ProductEntityMapper productEntityMapper;
     private final IBrandRepository brandRepository;
     private final ICategoryRepository categoryRepository;
 
     @Override
-    public void createArticle(Article article) {
-        if(articleRepository.findByName(article.getName()).isPresent()){
-            throw new DuplicateArticleNameException(article.getName());
+    public void createProduct(Product product) {
+        if(articleRepository.findByName(product.getName()).isPresent()){
+            throw new DuplicateArticleNameException(product.getName());
         }
 
-       ArticleEntity articleEntity = articleEntityMapper.toEntity(article);
-        articleRepository.save(articleEntity);
+       ProductEntity productEntity = productEntityMapper.toEntity(product);
+        articleRepository.save(productEntity);
     }
 
     @Override
-    public Optional<Article> getArticleById(Long id) {
+    public Optional<Product> getProductById(Long id) {
         return articleRepository.findById(id)
-                .map(articleEntityMapper::toArticle);
+                .map(productEntityMapper::toProduct);
     }
 
     @Override
-    public List<Article> getAllArticles() {
-        List <ArticleEntity> articleEntityList = articleRepository.findAll();
-        if(articleEntityList.isEmpty()){
+    public List<Product> getAllProducts() {
+        List <ProductEntity> productEntityList = articleRepository.findAll();
+        if(productEntityList.isEmpty()){
             throw new NoDataFoundException();
         }
-        return articleEntityMapper.toListArticle(articleEntityList);
+        return productEntityMapper.toListProduct(productEntityList);
     }
 
     @Override
-    public PageCustom<Article> getArticlesByPage(PageRequestCustom pageRequest, String brandName, String categoryName) {
+    public PageCustom<Product> getProductsByPage(PageRequestCustom pageRequest, String brandName, String categoryName) {
         Sort sort = Sort.by(pageRequest.isAscending() ? Sort.Direction.ASC : Sort.Direction.DESC, pageRequest.getSortField());
         Pageable pageable = PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
 
-        Page<ArticleEntity> pageResult;
+        Page<ProductEntity> pageResult;
 
         if (brandName != null && !brandName.isEmpty() && categoryName != null && !categoryName.isEmpty()) {
             pageResult = articleRepository.findByBrandNameContainingIgnoreCaseAndCategoriesNameContainingIgnoreCase(brandName, categoryName, pageable);
@@ -71,10 +71,10 @@ public class ArticleJpaAdapter implements IArticlePersistencePort {
             pageResult = articleRepository.findAll(pageable);
         }
 
-        List<Article> articles = articleEntityMapper.toListArticle(pageResult.getContent());
+        List<Product> products = productEntityMapper.toListProduct(pageResult.getContent());
 
         return new PageCustom<>(
-                articles,
+                products,
                 (int) pageResult.getTotalElements(),
                 pageResult.getTotalPages(),
                 pageResult.getNumber(),
