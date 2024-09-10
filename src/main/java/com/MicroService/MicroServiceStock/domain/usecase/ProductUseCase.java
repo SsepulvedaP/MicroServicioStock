@@ -27,6 +27,9 @@ public class ProductUseCase implements IProductServicePort {
 
     @Override
     public void createProduct(Product product) {
+
+
+
         if (product.getCategories() == null || product.getCategories().isEmpty()) {
             throw new InvalidCategoryDataException(CATEGORY_DATA_FOR_PRODUCT);
         }

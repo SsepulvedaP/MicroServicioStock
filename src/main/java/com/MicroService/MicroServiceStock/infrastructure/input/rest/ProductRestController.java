@@ -15,6 +15,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductRestController {
 
-    private final IProductHandler articleHandler;
+    private final IProductHandler productHandler;
 
     @Operation(summary = "Create a new product")
     @ApiResponses(value = {
@@ -33,12 +36,19 @@ public class ProductRestController {
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PostMapping("/")
-    public ResponseEntity<Void> createArticle(@RequestBody ProductRequest productRequest) {
-        articleHandler.createProduct(productRequest);
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Void> createProduct(@RequestBody ProductRequest productRequest) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        productHandler.createProduct(productRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Operation(summary = "Get all articles")
+    @Operation(summary = "Get all products")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de productos encontrados.",
                     content = @Content(schema = @Schema(implementation = ProductResponse.class))),
@@ -46,25 +56,25 @@ public class ProductRestController {
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/")
-    public ResponseEntity<List<ProductResponse>> getAllArticles() {
-        return ResponseEntity.ok(articleHandler.getAllProducts());
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+        return ResponseEntity.ok(productHandler.getAllProducts());
     }
 
-    @Operation(summary = "Get an article by ID")
+    @Operation(summary = "Get a product by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Producto encontrado exitosamente",
                     content = @Content(schema = @Schema(implementation = ProductResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Product no encontrado",
+            @ApiResponse(responseCode = "404", description = "Producto no encontrado",
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getArticleById(@PathVariable Long id) {
-        return articleHandler.getProductById(id)
+        return productHandler.getProductById(id)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ProductNotFoundException("Producto no encontrado"));
     }
 
-    @Operation(summary = "Get paginated list of articles with sorting and filtering")
+    @Operation(summary = "Get paginated list of products with sorting and filtering")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Productos encontrados",
                     content = @Content(schema = @Schema(implementation = ProductResponse.class))),
@@ -72,7 +82,7 @@ public class ProductRestController {
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/paged")
-    public ResponseEntity<PageCustom<ProductResponse>> getArticlesPaged(
+    public ResponseEntity<PageCustom<ProductResponse>> getProductsPaged(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "name") String sortField,
@@ -81,7 +91,7 @@ public class ProductRestController {
             @RequestParam(required = false) String categoryName) {
 
         PageRequestCustom pageRequest = new PageRequestCustom(page, size, ascending, sortField);
-        PageCustom<ProductResponse> articles = articleHandler.getProducts(pageRequest, brandName, categoryName);
+        PageCustom<ProductResponse> articles = productHandler.getProducts(pageRequest, brandName, categoryName);
 
         return new ResponseEntity<>(articles, HttpStatus.OK);
     }
