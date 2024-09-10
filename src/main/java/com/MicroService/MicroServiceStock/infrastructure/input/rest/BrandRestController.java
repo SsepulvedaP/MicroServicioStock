@@ -13,6 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,14 +27,20 @@ public class BrandRestController {
 
     private final IBrandHandler brandHandler;
 
-    @Operation(summary = "Create a new brand")
+    @Operation(summary = "Crear una nueva marca",
+            description = "Crea una nueva marca en el sistema")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Brand created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data",
+            @ApiResponse(responseCode = "201", description = "Marca creada exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada incorrectos",
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PostMapping("/")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> createBrand(@RequestBody BrandRequest brandRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         brandHandler.createBrand(brandRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -70,7 +79,7 @@ public class BrandRestController {
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PutMapping("/{name}")
-    public ResponseEntity<Void> updateBrand(@PathVariable String name, @RequestBody BrandRequest brandRequest) {
+    public ResponseEntity<Void> updateBrand(@RequestBody BrandRequest brandRequest) {
         brandHandler.updateBrand(brandRequest);
         return ResponseEntity.ok().build();
     }

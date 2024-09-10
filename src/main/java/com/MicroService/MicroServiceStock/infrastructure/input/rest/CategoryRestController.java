@@ -13,6 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +34,12 @@ public class CategoryRestController {
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PostMapping("/")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> createCategory(@RequestBody CategoryRequest categoryRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         categoryHandler.createCategory(categoryRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -70,7 +78,7 @@ public class CategoryRestController {
                     content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PutMapping("/{name}")
-    public ResponseEntity<Void> updateCategory(@PathVariable String name, @RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<Void> updateCategory(@RequestBody CategoryRequest categoryRequest) {
         categoryHandler.updateCategory(categoryRequest);
         return ResponseEntity.ok().build();
     }
