@@ -1,6 +1,7 @@
 package com.MicroService.MicroServiceStock.application.handler.interfaces;
 
 import com.MicroService.MicroServiceStock.application.dto.request.ProductRequest;
+import com.MicroService.MicroServiceStock.application.dto.request.UpdateProductRequest;
 import com.MicroService.MicroServiceStock.application.dto.response.ProductResponse;
 import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
 import com.MicroService.MicroServiceStock.domain.pagination.PageRequestCustom;
@@ -14,4 +15,5 @@ public interface IProductHandler {
     Optional<ProductResponse> getProductById(Long id);
     List<ProductResponse> getAllProducts();
     PageCustom<ProductResponse> getProducts(PageRequestCustom pageRequest, String brandName, String categoryName);
+    void updateProduct(UpdateProductRequest updateProductRequest);
 }

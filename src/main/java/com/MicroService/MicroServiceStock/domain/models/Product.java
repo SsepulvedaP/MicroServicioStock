@@ -50,7 +50,7 @@ public class Product {
         this.description = description;
     }
 
-    public int getQuantityy() {
+    public int getQuantity() {
         return quantity;
     }
 

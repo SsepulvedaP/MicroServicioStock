@@ -12,4 +12,5 @@ public interface IProductPersistencePort {
     Optional<Product> getProductById(Long id);
     List<Product> getAllProducts();
     PageCustom<Product> getProductsByPage(PageRequestCustom pageRequest, String brandName, String categoryName);
+    void updateQuantity(Long productId, int quantity);
 }

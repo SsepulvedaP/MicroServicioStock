@@ -6,11 +6,12 @@ import com.MicroService.MicroServiceStock.domain.pagination.PageCustom;
 import com.MicroService.MicroServiceStock.domain.pagination.PageRequestCustom;
 import com.MicroService.MicroServiceStock.domain.spi.IProductPersistencePort;
 import com.MicroService.MicroServiceStock.infrastructure.exception.NoDataFoundException;
+import com.MicroService.MicroServiceStock.infrastructure.exception.ProductNotFoundException;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.entity.ProductEntity;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.mapper.ProductEntityMapper;
-import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.IProductRepository;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.IBrandRepository;
 import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.ICategoryRepository;
+import com.MicroService.MicroServiceStock.infrastructure.jpa.repository.IProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,34 +21,37 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.Optional;
 
+import static com.MicroService.MicroServiceStock.utils.Constants.PRODUCT_NOT_FOUND;
+
 
 @RequiredArgsConstructor
 public class ProductJpaAdapter implements IProductPersistencePort {
 
-    private final IProductRepository articleRepository;
+    private final IProductRepository productRepository;
     private final ProductEntityMapper productEntityMapper;
     private final IBrandRepository brandRepository;
     private final ICategoryRepository categoryRepository;
 
+
     @Override
     public void createProduct(Product product) {
-        if(articleRepository.findByName(product.getName()).isPresent()){
+        if(productRepository.findByName(product.getName()).isPresent()){
             throw new DuplicateArticleNameException(product.getName());
         }
 
        ProductEntity productEntity = productEntityMapper.toEntity(product);
-        articleRepository.save(productEntity);
+        productRepository.save(productEntity);
     }
 
     @Override
     public Optional<Product> getProductById(Long id) {
-        return articleRepository.findById(id)
+        return productRepository.findById(id)
                 .map(productEntityMapper::toProduct);
     }
 
     @Override
     public List<Product> getAllProducts() {
-        List <ProductEntity> productEntityList = articleRepository.findAll();
+        List <ProductEntity> productEntityList = productRepository.findAll();
         if(productEntityList.isEmpty()){
             throw new NoDataFoundException();
         }
@@ -62,13 +66,13 @@ public class ProductJpaAdapter implements IProductPersistencePort {
         Page<ProductEntity> pageResult;
 
         if (brandName != null && !brandName.isEmpty() && categoryName != null && !categoryName.isEmpty()) {
-            pageResult = articleRepository.findByBrandNameContainingIgnoreCaseAndCategoriesNameContainingIgnoreCase(brandName, categoryName, pageable);
+            pageResult = productRepository.findByBrandNameContainingIgnoreCaseAndCategoriesNameContainingIgnoreCase(brandName, categoryName, pageable);
         } else if (brandName != null && !brandName.isEmpty()) {
-            pageResult = articleRepository.findByBrandNameContainingIgnoreCase(brandName, pageable);
+            pageResult = productRepository.findByBrandNameContainingIgnoreCase(brandName, pageable);
         } else if (categoryName != null && !categoryName.isEmpty()) {
-            pageResult = articleRepository.findByCategoriesNameContainingIgnoreCase(categoryName, pageable);
+            pageResult = productRepository.findByCategoriesNameContainingIgnoreCase(categoryName, pageable);
         } else {
-            pageResult = articleRepository.findAll(pageable);
+            pageResult = productRepository.findAll(pageable);
         }
 
         List<Product> products = productEntityMapper.toListProduct(pageResult.getContent());
@@ -80,6 +84,15 @@ public class ProductJpaAdapter implements IProductPersistencePort {
                 pageResult.getNumber(),
                 pageRequest.isAscending()
         );
+    }
+
+    @Override
+    public void updateQuantity(Long productId, int quantity) {
+        ProductEntity productEntity = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(PRODUCT_NOT_FOUND));
+
+        productEntity.setQuantity(quantity);
+        productRepository.save(productEntity);
     }
 
 
