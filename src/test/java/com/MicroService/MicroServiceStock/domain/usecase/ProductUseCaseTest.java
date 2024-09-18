@@ -165,4 +165,29 @@ class ProductUseCaseTest {
         verify(articlePersistencePort, times(1)).getProductsByPage(pageRequest, null, null);
     }
 
+    @Test
+    void updateQuantity_WithExistingId_ShouldUpdateQuantity() {
+        Long id = 1L;
+        int quantity = 5;
+        Product product = new Product();
+        product.setId(id);
+        product.setQuantity(10);
+
+        when(articlePersistencePort.getProductById(id)).thenReturn(Optional.of(product));
+
+        articleUseCase.updateQuantity(id, quantity);
+
+        verify(articlePersistencePort, times(1)).updateQuantity(id, quantity);
+    }
+
+    @Test
+    void updateQuantity_WithNonExistingId_ShouldThrowProductNotFoundException() {
+        Long id = 1L;
+        int quantity = 5;
+
+        when(articlePersistencePort.getProductById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class, () -> articleUseCase.updateQuantity(id, quantity));
+    }
+
 }

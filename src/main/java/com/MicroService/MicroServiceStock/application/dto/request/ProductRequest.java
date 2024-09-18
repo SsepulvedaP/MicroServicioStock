@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.util.Set;
 
+import static com.MicroService.MicroServiceStock.utils.Constants.MIN_CATEGORY_FOR_PRODUCT;
+import static com.MicroService.MicroServiceStock.utils.Constants.PRICE_GREATER_THAN_ZERO;
+
 @Getter
 @Setter
 public class ProductRequest {
@@ -16,11 +19,11 @@ public class ProductRequest {
     @Min(1)
     private int quantity;
     @NotBlank
-    @Positive(message = "El precio debe ser mayor a 0")
+    @Positive(message = PRICE_GREATER_THAN_ZERO)
     private double price;
     @NotNull
     private Long brandId;
     @NotNull
-    @Size(min = 1, max = 3, message = "Debe tener al menos una categoria y maximo 3")
+    @Size(min = 1, max = 3, message = MIN_CATEGORY_FOR_PRODUCT)
     private Set<Long> categoryIds;
 }

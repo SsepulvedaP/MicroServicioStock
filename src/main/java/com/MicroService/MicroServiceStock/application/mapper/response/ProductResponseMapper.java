@@ -15,7 +15,7 @@ import java.util.List;
 public interface ProductResponseMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "description", target = "description")
-    @Mapping(source = "quantityy", target = "quantity")
+    @Mapping(source = "quantity", target = "quantity")
     @Mapping(source = "price", target = "price")
     ProductResponse toResponse(Product product);
 

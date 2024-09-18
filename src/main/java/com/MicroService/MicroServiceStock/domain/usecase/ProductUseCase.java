@@ -28,8 +28,6 @@ public class ProductUseCase implements IProductServicePort {
     @Override
     public void createProduct(Product product) {
 
-
-
         if (product.getCategories() == null || product.getCategories().isEmpty()) {
             throw new InvalidCategoryDataException(CATEGORY_DATA_FOR_PRODUCT);
         }
@@ -87,6 +85,12 @@ public class ProductUseCase implements IProductServicePort {
     }
 
 
-
+    @Override
+    public void updateQuantity(Long id, int quantity) {
+        if(!iProductPersistencePort.getProductById(id).isPresent()) {
+            throw new ProductNotFoundException(PRODUCT_NOT_FOUND);
+        }
+        iProductPersistencePort.updateQuantity(id, quantity);
+    }
 }
 

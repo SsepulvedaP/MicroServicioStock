@@ -12,4 +12,5 @@ public interface IProductServicePort {
     Optional<Product> getProductById(Long id);
     List<Product> getAllProducts();
     PageCustom<Product> getProductsByPage(PageRequestCustom pageRequest, String brandName, String categoryName);
+    void updateQuantity(Long id, int quantity);
 }
